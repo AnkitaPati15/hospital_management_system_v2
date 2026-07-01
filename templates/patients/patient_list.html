@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+
+    <h2>Patients</h2>
+
+    <a href="{% url 'patient-create' %}"
+       class="btn btn-success">
+
+        + Add Patient
+
+    </a>
+
+</div>
+
+<input
+    type="text"
+    class="form-control mb-3"
+    placeholder="Search Patient">
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Blood Group</th>
+            <th>Actions</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for patient in patients %}
+
+        <tr>
+
+            <td>{{ patient.user.username }}</td>
+            <td>{{ patient.age }}</td>
+            <td>{{ patient.gender }}</td>
+            <td>{{ patient.blood_group }}</td>
+
+            <td>
+
+                <a href="{% url 'patient-update' patient.id %}"
+                   class="btn btn-warning btn-sm">
+
+                    Edit
+
+                </a>
+
+                <a href="{% url 'patient-delete' patient.id %}"
+                   class="btn btn-danger btn-sm">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

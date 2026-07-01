@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mt-3">Doctors</h2>
+
+<a href="{% url 'doctor-create' %}"
+   class="btn btn-success mb-3">
+
+    Add Doctor
+
+</a>
+
+<table class="table table-hover table-bordered">
+
+    <thead class="table-dark">
+
+        <tr>
+
+            <th>Name</th>
+
+            <th>Department</th>
+
+            <th>Qualification</th>
+
+            <th>Experience</th>
+
+            <th>Fee</th>
+
+            <th>Status</th>
+
+            <th>Actions</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for doctor in doctors %}
+
+        <tr>
+
+            <td>
+                {{ doctor.user.username }}
+            </td>
+
+            <td>
+                {{ doctor.department.name }}
+            </td>
+
+            <td>
+                {{ doctor.qualification }}
+            </td>
+
+            <td>
+                {{ doctor.experience }} Years
+            </td>
+
+            <td>
+                ₹{{ doctor.consultation_fee }}
+            </td>
+
+            <td>
+
+                {% if doctor.available %}
+
+                    <span class="badge bg-success">
+
+                        Available
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-danger">
+
+                        Unavailable
+
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a href="{% url 'doctor-update' doctor.id %}"
+                   class="btn btn-warning btn-sm">
+
+                    Edit
+
+                </a>
+
+                <a href="{% url 'doctor-delete' doctor.id %}"
+                   class="btn btn-danger btn-sm">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

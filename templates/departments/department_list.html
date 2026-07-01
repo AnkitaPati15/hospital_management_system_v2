@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mt-3">Departments</h2>
+
+{% if request.user.role == 'admin' %}
+
+<a href="{% url 'department-create' %}"
+   class="btn btn-success mb-3">
+    Add Department
+</a>
+
+{% endif %}
+
+<table class="table table-bordered table-hover">
+
+    <thead>
+
+        <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Actions</th>
+</tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for department in departments %}
+
+        <tr>
+
+    <td>{{ department.id }}</td>
+
+    <td>{{ department.name }}</td>
+
+    <td>{{ department.description }}</td>
+
+<td>
+
+{% if request.user.role == 'admin' %}
+
+    <a href="{% url 'department-update' department.id %}"
+       class="btn btn-warning btn-sm">
+       Edit
+    </a>
+
+    <a href="{% url 'department-delete' department.id %}"
+       class="btn btn-danger btn-sm">
+       Delete
+    </a>
+
+{% endif %}
+
+</td>
+
+</tr>
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

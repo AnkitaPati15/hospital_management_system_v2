@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+    <h3>
+
+        {% if object %}
+            Edit Prescription
+        {% else %}
+            Add Prescription
+        {% endif %}
+
+    </h3>
+
+</div>
+
+<div class="card-body">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button
+            type="submit"
+            class="btn btn-success">
+
+            Save Prescription
+
+        </button>
+
+    </form>
+
+</div>
+
+</div>
+
+{% endblock %}

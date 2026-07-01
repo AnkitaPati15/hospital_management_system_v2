@@ -42,3 +42,7 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.patient} - {self.doctor}"
+    class Meta:
+        unique_together = (
+            ('doctor', 'appointment_date', 'appointment_time'),
+        )

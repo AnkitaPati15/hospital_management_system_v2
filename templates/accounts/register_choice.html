@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1>🏥 Hospital Registration</h1>
+        <p class="text-muted">
+            Select your registration type
+        </p>
+    </div>
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-4">
+
+            <div class="card shadow text-center">
+
+                <div class="card-body">
+
+                    <h2>👨‍⚕️</h2>
+
+                    <h4>Doctor</h4>
+
+                    <p>
+                        Register as a doctor and manage appointments.
+                    </p>
+
+                    <a href="{% url 'doctor-register' %}"
+                       class="btn btn-primary">
+                        Register as Doctor
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow text-center">
+
+                <div class="card-body">
+
+                    <h2>👤</h2>
+
+                    <h4>Patient</h4>
+
+                    <p>
+                        Register as a patient and book appointments.
+                    </p>
+
+                    <a href="{% url 'patient-register' %}"
+                       class="btn btn-success">
+                        Register as Patient
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

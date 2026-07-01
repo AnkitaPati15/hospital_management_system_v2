@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow">
+
+
+<div class="card-header bg-primary text-white">
+
+    <h3>
+
+        {% if object %}
+            Edit Bill
+        {% else %}
+            Generate Bill
+        {% endif %}
+
+    </h3>
+
+</div>
+
+<div class="card-body">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button
+            type="submit"
+            class="btn btn-success">
+
+            Save Bill
+
+        </button>
+
+    </form>
+
+</div>
+
+
+</div>
+
+{% endblock %}

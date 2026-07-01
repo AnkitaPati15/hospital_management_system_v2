@@ -1,0 +1,378 @@
+<div class="sidebar">
+
+    <!-- Logo -->
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            <i class="bi bi-hospital"></i>
+        </div>
+
+        <div>
+
+            <h4>Hospital HMS</h4>
+
+            <small>Management System</small>
+
+        </div>
+
+    </div>
+
+    <!-- User -->
+
+    <div class="user-card">
+
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+             alt="User">
+
+        {% if request.user.is_authenticated %}
+
+            <h6>
+                {{ request.user.username }}
+            </h6>
+
+            <span class="badge bg-primary">
+                {{ request.user.role|title }}
+            </span>
+
+        {% else %}
+
+            <h6>Guest User</h6>
+
+        {% endif %}
+
+    </div>
+
+    <!-- Navigation -->
+
+    <ul class="nav flex-column mt-4">
+
+        <li class="nav-item">
+
+            <a href="/"
+               class="nav-link">
+
+                <i class="bi bi-speedometer2"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+
+
+        <!-- ================= ADMIN ================= -->
+
+        {% if request.user.is_authenticated and request.user.role == 'admin' %}
+
+        <li class="menu-title">
+
+            Management
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/departments/ui/"
+               class="nav-link">
+
+                <i class="bi bi-building"></i>
+
+                Departments
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/doctors/ui/"
+               class="nav-link">
+
+                <i class="bi bi-person-badge"></i>
+
+                Doctors
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/patients/ui/"
+               class="nav-link">
+
+                <i class="bi bi-people"></i>
+
+                Patients
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/appointments/ui/"
+               class="nav-link">
+
+                <i class="bi bi-calendar-check"></i>
+
+                Appointments
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/prescriptions/ui/"
+               class="nav-link">
+
+                <i class="bi bi-file-earmark-medical"></i>
+
+                Prescriptions
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/bills/ui/"
+               class="nav-link">
+
+                <i class="bi bi-receipt"></i>
+
+                Billing
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+
+
+        <!-- ================= PATIENT ================= -->
+
+        {% if request.user.is_authenticated and request.user.role == 'patient' %}
+
+        <li class="menu-title">
+
+            Patient Portal
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/patients/dashboard/"
+               class="nav-link">
+
+                <i class="bi bi-grid"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/doctors/ui/"
+               class="nav-link">
+
+                <i class="bi bi-person-badge"></i>
+
+                Doctors
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/appointments/book/"
+               class="nav-link">
+
+                <i class="bi bi-calendar-plus"></i>
+
+                Book Appointment
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/patients/my-appointments/"
+               class="nav-link">
+
+                <i class="bi bi-calendar-week"></i>
+
+                My Appointments
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/patients/my-prescriptions/"
+               class="nav-link">
+
+                <i class="bi bi-capsule"></i>
+
+                My Prescriptions
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/patients/my-bills/"
+               class="nav-link">
+
+                <i class="bi bi-credit-card"></i>
+
+                My Bills
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+
+
+        <!-- ================= DOCTOR ================= -->
+
+        {% if request.user.is_authenticated and request.user.role == 'doctor' %}
+
+        <li class="menu-title">
+
+            Doctor Panel
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/doctors/dashboard/"
+               class="nav-link">
+
+                <i class="bi bi-grid"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/appointments/ui/"
+               class="nav-link">
+
+                <i class="bi bi-calendar-check"></i>
+
+                My Appointments
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/prescriptions/ui/"
+               class="nav-link">
+
+                <i class="bi bi-file-earmark-medical"></i>
+
+                Prescriptions
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+
+
+        <!-- ================= GUEST ================= -->
+
+        {% if not request.user.is_authenticated %}
+
+        <li class="menu-title">
+
+            Account
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/auth/login-ui/"
+               class="nav-link">
+
+                <i class="bi bi-box-arrow-in-right"></i>
+
+                Login
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/auth/register-choice/"
+               class="nav-link">
+
+                <i class="bi bi-person-plus"></i>
+
+                Register
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+
+
+        <!-- ================= PROFILE ================= -->
+
+        {% if request.user.is_authenticated %}
+
+        <hr class="text-secondary">
+
+        <li class="nav-item">
+
+            <a href="/api/auth/profile/"
+               class="nav-link">
+
+                <i class="bi bi-person-circle"></i>
+
+                My Profile
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a href="/api/auth/logout-ui/"
+               class="nav-link text-danger">
+
+                <i class="bi bi-box-arrow-right"></i>
+
+                Logout
+
+            </a>
+
+        </li>
+
+        {% endif %}
+
+    </ul>
+
+</div>
