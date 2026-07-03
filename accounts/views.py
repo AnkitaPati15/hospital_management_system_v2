@@ -84,61 +84,12 @@ def doctor_register(request):
         }
     )
 
-def patient_register(request):
-
-    if request.method == 'POST':
-
-        form = PatientRegisterForm(
-            request.POST
-        )
-
-        if form.is_valid():
-
-            user = User.objects.create_user(
-
-                username=form.cleaned_data['username'],
-
-                email=form.cleaned_data['email'],
-
-                password=form.cleaned_data['password'],
-
-                role='patient'
-            )
-
-            Patient.objects.create(
-
-                user=user,
-
-                date_of_birth=form.cleaned_data['date_of_birth'],
-
-                gender=form.cleaned_data['gender'],
-
-                phone_number=form.cleaned_data['phone_number']
-            )
-
-            return redirect(
-                'login-page'
-            )
-
-    else:
-
-        form = PatientRegisterForm()
-
-    return render(
-        request,
-        'accounts/patient_register.html',
-        {
-            'form': form
-        }
-    )
 
 def patient_register(request):
 
     if request.method == 'POST':
 
-        form = PatientRegisterForm(
-            request.POST
-        )
+        form = PatientRegisterForm(request.POST)
 
         if form.is_valid():
 
@@ -172,9 +123,7 @@ def patient_register(request):
                 medical_history=form.cleaned_data['medical_history']
             )
 
-            return redirect(
-                'login-page'
-            )
+            return redirect('login-page')
 
     else:
 
@@ -187,6 +136,7 @@ def patient_register(request):
             'form': form
         }
     )
+     
 
 # ==================================
 
@@ -206,17 +156,61 @@ class RegisterPageView(CreateView):
         user.save()
         return redirect('login-page')
 
-
 def login_page(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = authenticate(request, email=email, password=password)
-        if user:
+
+    if request.method == "POST":
+
+        email = request.POST.get("email")
+
+        password = request.POST.get("password")
+
+        user = authenticate(
+
+            request,
+
+            email=email,
+
+            password=password
+
+        )
+
+        if user is not None:
+
             login(request, user)
-            return redirect('/api/departments/ui/')
-        return render(request, 'accounts/login.html', {'error': 'Invalid Email or Password'})
-    return render(request, 'accounts/login.html')
+
+            if user.role == "admin":
+
+                return redirect("/")
+
+            elif user.role == "doctor":
+
+                return redirect("/api/doctors/dashboard/")
+
+            elif user.role == "patient":
+
+                return redirect("/api/patients/dashboard/")
+
+        return render(
+
+            request,
+
+            "accounts/login.html",
+
+            {
+
+                "error": "Invalid Email or Password"
+
+            }
+
+        )
+
+    return render(
+
+        request,
+
+        "accounts/login.html"
+
+    )
 
 
 def logout_page(request):

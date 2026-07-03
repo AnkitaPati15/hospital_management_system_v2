@@ -1,11 +1,18 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
+
 from django.urls import reverse_lazy
+
+from django.contrib import messages
 
 from django.views.generic import (
     ListView,
     CreateView,
     UpdateView,
     DeleteView,
+    View,
 )
 
 from rest_framework.views import APIView
@@ -15,84 +22,117 @@ from rest_framework import status
 
 from .models import Appointment
 from .serializers import AppointmentSerializer
-from django.urls import reverse_lazy
+
 
 # ==================================
-
 # FRONTEND VIEWS
-
 # ==================================
 
 
 class AppointmentListView(ListView):
+
     model = Appointment
 
-    template_name = 'appointments/appointment_list.html'
+    template_name = "appointments/appointment_list.html"
 
-    context_object_name = 'appointments'
+    context_object_name = "appointments"
 
-    queryset = Appointment.objects.select_related('patient', 'doctor').order_by('-appointment_date')
+    def get_queryset(self):
+
+        queryset = Appointment.objects.select_related(
+            "patient__user",
+            "doctor__user",
+        )
+
+        user = self.request.user
+
+        if user.is_authenticated:
+
+            if user.role == "doctor":
+
+                queryset = queryset.filter(
+                    doctor__user=user
+                )
+
+            elif user.role == "patient":
+
+                queryset = queryset.filter(
+                    patient__user=user
+                )
+
+        return queryset.order_by(
+            "-appointment_date",
+            "-appointment_time",
+        )
 
 
 class AppointmentCreateView(CreateView):
+
     model = Appointment
 
     fields = [
-        'patient',
-        'doctor',
-        'appointment_date',
-        'appointment_time',
-        'reason',
-        'status',
+        "patient",
+        "doctor",
+        "appointment_date",
+        "appointment_time",
+        "reason",
+        "status",
     ]
 
-    template_name = 'appointments/appointment_form.html'
+    template_name = "appointments/appointment_form.html"
 
-    success_url = reverse_lazy('appointment-list')
+    success_url = reverse_lazy("appointment-list")
 
 
 class AppointmentUpdateView(UpdateView):
+
     model = Appointment
 
     fields = [
-        'patient',
-        'doctor',
-        'appointment_date',
-        'appointment_time',
-        'reason',
-        'status',
+        "patient",
+        "doctor",
+        "appointment_date",
+        "appointment_time",
+        "reason",
+        "status",
     ]
 
-    template_name = 'appointments/appointment_form.html'
+    template_name = "appointments/appointment_form.html"
 
-    success_url = reverse_lazy('appointment-list')
+    success_url = reverse_lazy("appointment-list")
 
 
 class AppointmentDeleteView(DeleteView):
+
     model = Appointment
 
-    template_name = 'appointments/appointment_confirm_delete.html'
+    template_name = "appointments/appointment_confirm_delete.html"
 
-    success_url = reverse_lazy('appointment-list')
+    success_url = reverse_lazy("appointment-list")
+
 
 class BookAppointmentView(CreateView):
+
     model = Appointment
 
     fields = [
-        'doctor',
-        'appointment_date',
-        'appointment_time',
-        'reason',
+        "doctor",
+        "appointment_date",
+        "appointment_time",
+        "reason",
     ]
 
-    template_name = 'appointments/book_appointment.html'
+    template_name = "appointments/book_appointment.html"
 
-    success_url = reverse_lazy('appointment-list')
+    success_url = reverse_lazy("appointment-list")
 
     def form_valid(self, form):
-        doctor = form.cleaned_data['doctor']
-        appointment_date = form.cleaned_data['appointment_date']
-        appointment_time = form.cleaned_data['appointment_time']
+
+        doctor = form.cleaned_data["doctor"]
+
+        appointment_date = form.cleaned_data["appointment_date"]
+
+        appointment_time = form.cleaned_data["appointment_time"]
 
         exists = Appointment.objects.filter(
             doctor=doctor,
@@ -101,59 +141,247 @@ class BookAppointmentView(CreateView):
         ).exists()
 
         if exists:
-            form.add_error(None, 'This slot is already booked.')
+
+            form.add_error(
+                None,
+                "This slot is already booked."
+            )
+
             return self.form_invalid(form)
 
         form.instance.patient = self.request.user.patient
 
+        form.instance.status = "pending"
+
         return super().form_valid(form)
-
-
-
-# ==================================
-
+    # ==================================
 # API VIEWS
-
 # ==================================
 
 
 class AppointmentListCreateView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        appointments = Appointment.objects.all()
-        serializer = AppointmentSerializer(appointments, many=True)
+
+        appointments = Appointment.objects.select_related(
+            "patient__user",
+            "doctor__user",
+        )
+
+        serializer = AppointmentSerializer(
+            appointments,
+            many=True,
+        )
+
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AppointmentSerializer(data=request.data)
+
+        serializer = AppointmentSerializer(
+            data=request.data
+        )
+
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer.save(
+                status="pending"
+            )
+
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class AppointmentDetailView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
-        return get_object_or_404(Appointment, pk=pk)
+
+        return get_object_or_404(
+            Appointment,
+            pk=pk,
+        )
 
     def get(self, request, pk):
+
         appointment = self.get_object(pk)
-        serializer = AppointmentSerializer(appointment)
+
+        serializer = AppointmentSerializer(
+            appointment
+        )
+
         return Response(serializer.data)
 
     def patch(self, request, pk):
+
         appointment = self.get_object(pk)
-        serializer = AppointmentSerializer(appointment, data=request.data, partial=True)
+
+        serializer = AppointmentSerializer(
+            appointment,
+            data=request.data,
+            partial=True,
+        )
+
         if serializer.is_valid():
+
             serializer.save()
+
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     def delete(self, request, pk):
+
         appointment = self.get_object(pk)
-        appointment.status = 'cancelled'
+
+        appointment.status = "cancelled"
+
         appointment.save()
-        return Response({'message': 'Appointment cancelled successfully'})
+
+        return Response(
+            {
+                "message":
+                "Appointment cancelled successfully."
+            }
+        )
+    # ==================================
+# DOCTOR ACTION VIEWS
+# ==================================
+
+
+class ApproveAppointmentView(View):
+
+    def post(self, request, pk):
+
+        appointment = get_object_or_404(
+            Appointment,
+            pk=pk
+        )
+
+        if not request.user.is_authenticated:
+
+            messages.error(
+                request,
+                "Please login first."
+            )
+
+            return redirect("login-page")
+
+        if request.user.role != "doctor":
+
+            messages.error(
+                request,
+                "Only doctors can approve appointments."
+            )
+
+            return redirect("appointment-list")
+
+        appointment.status = "scheduled"
+
+        appointment.save()
+
+        messages.success(
+            request,
+            "Appointment approved successfully."
+        )
+
+        return redirect("appointment-list")
+
+
+class RejectAppointmentView(View):
+
+    def post(self, request, pk):
+
+        appointment = get_object_or_404(
+            Appointment,
+            pk=pk
+        )
+
+        if not request.user.is_authenticated:
+
+            messages.error(
+                request,
+                "Please login first."
+            )
+
+            return redirect("login-page")
+
+        if request.user.role != "doctor":
+
+            messages.error(
+                request,
+                "Only doctors can reject appointments."
+            )
+
+            return redirect("appointment-list")
+
+        appointment.status = "cancelled"
+
+        appointment.save()
+
+        messages.success(
+            request,
+            "Appointment rejected successfully."
+        )
+
+        return redirect("appointment-list")
+
+
+class CompleteAppointmentView(View):
+
+    def post(self, request, pk):
+
+        appointment = get_object_or_404(
+            Appointment,
+            pk=pk
+        )
+
+        if not request.user.is_authenticated:
+
+            messages.error(
+                request,
+                "Please login first."
+            )
+
+            return redirect("login-page")
+
+        if request.user.role != "doctor":
+
+            messages.error(
+                request,
+                "Only doctors can complete appointments."
+            )
+
+            return redirect("appointment-list")
+
+        if appointment.status != "scheduled":
+
+            messages.error(
+                request,
+                "Only scheduled appointments can be completed."
+            )
+
+            return redirect("appointment-list")
+
+        appointment.status = "completed"
+
+        appointment.save()
+
+        messages.success(
+            request,
+            "Appointment completed successfully."
+        )
+
+        return redirect("appointment-list")

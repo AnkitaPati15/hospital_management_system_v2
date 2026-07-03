@@ -1,109 +1,434 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Appointments
+{% endblock %}
+
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="container-fluid">
 
-    <h2>Appointments</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <a href="{% url 'appointment-create' %}"
-       class="btn btn-success">
+        <div>
 
-        + Book Appointment
+            <h2 class="fw-bold">
+                Appointment Management
+            </h2>
 
-    </a>
+            <p class="text-muted mb-0">
+                View and manage appointments
+            </p>
 
-</div>
+        </div>
 
-<table class="table table-bordered table-hover">
+        {% if request.user.role == "patient" %}
 
-    <thead class="table-dark">
+        <a href="{% url 'appointment-book' %}"
+           class="btn btn-primary">
 
-        <tr>
+            <i class="bi bi-calendar-plus me-2"></i>
 
-            <th>Patient</th>
+            Book Appointment
 
-            <th>Doctor</th>
+        </a>
 
-            <th>Date</th>
+        {% endif %}
 
-            <th>Time</th>
+    </div>
 
-            <th>Status</th>
+    <div class="card shadow-sm border-0">
 
-            <th>Actions</th>
+        <div class="card-body">
 
-        </tr>
+            <div class="table-responsive">
 
-    </thead>
+                <table class="table table-hover align-middle">
 
-    <tbody>
+                    <thead class="table-light">
 
-    {% for appointment in appointments %}
+                        <tr>
 
-        <tr>
+                            <th>Patient</th>
 
-            <td>
-                {{ appointment.patient.user.username }}
-            </td>
+                            <th>Doctor</th>
 
-            <td>
-                {{ appointment.doctor.user.username }}
-            </td>
+                            <th>Date</th>
 
-            <td>
-                {{ appointment.appointment_date }}
-            </td>
+                            <th>Time</th>
 
-            <td>
-                {{ appointment.appointment_time }}
-            </td>
+                            <th>Status</th>
 
-            <td>
+                            <th width="350">
+                                Actions
+                            </th>
 
-                {% if appointment.status == 'scheduled' %}
+                        </tr>
 
-                    <span class="badge bg-warning">
-                        Scheduled
-                    </span>
+                    </thead>
 
-                {% elif appointment.status == 'completed' %}
+                    <tbody>
 
-                    <span class="badge bg-success">
-                        Completed
-                    </span>
+            {% for appointment in appointments %}
 
-                {% else %}
+<tr>
 
-                    <span class="badge bg-danger">
-                        Cancelled
-                    </span>
+    <td>
 
-                {% endif %}
+        {{ appointment.patient.user.username }}
 
-            </td>
+    </td>
 
-            <td>
+    <td>
+
+        Dr. {{ appointment.doctor.user.username }}
+
+    </td>
+
+    <td>
+
+        {{ appointment.appointment_date }}
+
+    </td>
+
+    <td>
+
+        {{ appointment.appointment_time }}
+
+    </td>
+
+    <td>
+
+        {% if appointment.status == "pending" %}
+
+            <span class="badge bg-secondary">
+
+                Pending
+
+            </span>
+
+        {% elif appointment.status == "scheduled" %}
+
+            <span class="badge bg-warning text-dark">
+
+                Scheduled
+
+            </span>
+
+        {% elif appointment.status == "completed" %}
+
+            <span class="badge bg-success">
+
+                Completed
+
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-danger">
+
+                Cancelled
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        <div class="d-flex flex-wrap gap-2">
+
+            {% if request.user.role == "admin" %}
 
                 <a href="{% url 'appointment-update' appointment.id %}"
-                   class="btn btn-warning btn-sm">
+                   class="btn btn-outline-warning btn-sm">
+
+                    <i class="bi bi-pencil-square"></i>
 
                     Edit
 
                 </a>
 
                 <a href="{% url 'appointment-delete' appointment.id %}"
-                   class="btn btn-danger btn-sm">
+                   class="btn btn-outline-danger btn-sm">
+
+                    <i class="bi bi-trash"></i>
 
                     Delete
 
                 </a>
 
-            </td>
+            {% endif %}
 
-        </tr>
+            {% if request.user.role == "doctor" %}
 
-    {% endfor %}
+                {% if appointment.status == "pending" %}
+
+                    <form method="post"
+                          action="{% url 'appointment-approve' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-success btn-sm">
+
+                            <i class="bi bi-check-circle"></i>
+
+                            Approve
+
+                        </button>
+
+                    </form>
+
+                    <form method="post"
+                          action="{% url 'appointment-reject' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-danger btn-sm">
+
+                            <i class="bi bi-x-circle"></i>
+
+                            Reject
+
+                        </button>
+
+                    </form>
+
+                {% elif appointment.status == "scheduled" %}
+
+                    <form method="post"
+                          action="{% url 'appointment-complete' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-primary btn-sm">
+
+                            <i class="bi bi-check2-all"></i>
+
+                            Complete
+
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+            {% if request.user.role == "patient" %}
+
+                <span class="text-muted">
+
+                    No Actions
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="6"
+        class="text-center text-muted py-4">
+
+        No appointments found.
+
+    </td>
+
+</tr>
+
+{% endfor %}
+{% for appointment in appointments %}
+
+<tr>
+
+    <td>
+
+        {{ appointment.patient.user.username }}
+
+    </td>
+
+    <td>
+
+        Dr. {{ appointment.doctor.user.username }}
+
+    </td>
+
+    <td>
+
+        {{ appointment.appointment_date }}
+
+    </td>
+
+    <td>
+
+        {{ appointment.appointment_time }}
+
+    </td>
+
+    <td>
+
+        {% if appointment.status == "pending" %}
+
+            <span class="badge bg-secondary">
+
+                Pending
+
+            </span>
+
+        {% elif appointment.status == "scheduled" %}
+
+            <span class="badge bg-warning text-dark">
+
+                Scheduled
+
+            </span>
+
+        {% elif appointment.status == "completed" %}
+
+            <span class="badge bg-success">
+
+                Completed
+
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-danger">
+
+                Cancelled
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        <div class="d-flex flex-wrap gap-2">
+
+            {% if request.user.role == "admin" %}
+
+                <a href="{% url 'appointment-update' appointment.id %}"
+                   class="btn btn-outline-warning btn-sm">
+
+                    <i class="bi bi-pencil-square"></i>
+
+                    Edit
+
+                </a>
+
+                <a href="{% url 'appointment-delete' appointment.id %}"
+                   class="btn btn-outline-danger btn-sm">
+
+                    <i class="bi bi-trash"></i>
+
+                    Delete
+
+                </a>
+
+            {% endif %}
+
+            {% if request.user.role == "doctor" %}
+
+                {% if appointment.status == "pending" %}
+
+                    <form method="post"
+                          action="{% url 'appointment-approve' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-success btn-sm">
+
+                            <i class="bi bi-check-circle"></i>
+
+                            Approve
+
+                        </button>
+
+                    </form>
+
+                    <form method="post"
+                          action="{% url 'appointment-reject' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-danger btn-sm">
+
+                            <i class="bi bi-x-circle"></i>
+
+                            Reject
+
+                        </button>
+
+                    </form>
+
+                {% elif appointment.status == "scheduled" %}
+
+                    <form method="post"
+                          action="{% url 'appointment-complete' appointment.id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn btn-primary btn-sm">
+
+                            <i class="bi bi-check2-all"></i>
+
+                            Complete
+
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+            {% if request.user.role == "patient" %}
+
+                <span class="text-muted">
+
+                    No Actions
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+    <td colspan="6"
+        class="text-center text-muted py-4">
+
+        No appointments found.
+
+    </td>
+
+</tr>
+
+{% endfor %}
 
     </tbody>
 

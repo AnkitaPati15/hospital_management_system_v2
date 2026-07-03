@@ -1,3 +1,5 @@
+from multiprocessing import context
+
 from django.views.generic import TemplateView
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
@@ -36,6 +38,12 @@ class AdminDashboardView(TemplateView):
         context["today_appointments"] = Appointment.objects.filter(
             appointment_date=today
         ).count()
+        context["today_schedule"] = Appointment.objects.select_related(
+            "patient__user",
+            "doctor__user"
+        ).filter(
+            appointment_date=today
+        ).order_by("appointment_time")[:5]
 
         context["scheduled_count"] = Appointment.objects.filter(
             status="scheduled"
@@ -90,6 +98,79 @@ class AdminDashboardView(TemplateView):
             [
                 item["total"]
                 for item in monthly
+            ]
+        )
+        # Monthly Revenue
+
+        monthly_revenue = (
+
+            Bill.objects
+
+            .annotate(
+                month=TruncMonth("created_at")
+            )
+
+            .values("month")
+
+            .annotate(
+                total=Sum("amount")
+            )
+
+            .order_by("month")
+
+        )
+
+        context["revenue_months"] = json.dumps(
+
+            [
+
+                item["month"].strftime("%b")
+
+                for item in monthly_revenue
+
+                if item["month"]
+
+            ]
+
+        )
+
+        context["revenue_data"] = json.dumps(
+
+            [
+
+                float(item["total"] or 0)
+
+                for item in monthly_revenue
+
+            ]
+
+        )
+        # Monthly Revenue Chart
+
+        monthly_revenue = (
+            Bill.objects
+            .annotate(
+                month=TruncMonth("created_at")
+            )
+            .values("month")
+            .annotate(
+                total=Sum("amount")
+            )
+            .order_by("month")
+        )
+
+        context["revenue_months"] = json.dumps(
+            [
+                item["month"].strftime("%b")
+                for item in monthly_revenue
+                if item["month"] is not None
+            ]
+        )
+
+        context["revenue_data"] = json.dumps(
+            [
+                float(item["total"] or 0)
+                for item in monthly_revenue
             ]
         )
 

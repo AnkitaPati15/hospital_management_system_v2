@@ -15,7 +15,7 @@ Admin Dashboard
 
         <div>
 
-            <h2 class="fw-bold mb-1">
+            <h2 class="fw-bold">
                 Dashboard
             </h2>
 
@@ -39,9 +39,9 @@ Admin Dashboard
 
     </div>
 
-    <!-- Statistics -->
+    <!-- Statistics Cards -->
 
-    <div class="row g-4 mb-4">
+    <div class="row g-4">
 
         <div class="col-lg-3 col-md-6">
 
@@ -133,9 +133,9 @@ Admin Dashboard
 
     </div>
 
-    <!-- Today's Overview + Quick Actions -->
+    <!-- Today's Overview -->
 
-    <div class="row">
+    <div class="row mt-4">
 
         <div class="col-lg-9">
 
@@ -221,9 +221,7 @@ Admin Dashboard
 
                     <div class="d-grid gap-3">
 
-                        <a href="/api/doctors/create/"
-
-                           class="btn btn-primary">
+                        <a href="/api/doctors/create/" class="btn btn-primary">
 
                             <i class="bi bi-person-plus-fill me-2"></i>
 
@@ -231,9 +229,7 @@ Admin Dashboard
 
                         </a>
 
-                        <a href="/api/patients/create/"
-
-                           class="btn btn-success">
+                        <a href="/api/patients/create/" class="btn btn-success">
 
                             <i class="bi bi-person-plus-fill me-2"></i>
 
@@ -241,9 +237,7 @@ Admin Dashboard
 
                         </a>
 
-                        <a href="/api/appointments/book/"
-
-                           class="btn btn-warning text-white">
+                        <a href="/api/appointments/book/" class="btn btn-warning text-white">
 
                             <i class="bi bi-calendar-plus-fill me-2"></i>
 
@@ -260,8 +254,7 @@ Admin Dashboard
         </div>
 
     </div>
-
-    <!-- Monthly Appointment Chart -->
+        <!-- Monthly Appointment Chart -->
 
     <div class="card shadow-sm border-0 mt-4">
 
@@ -277,9 +270,159 @@ Admin Dashboard
 
         <div class="card-body">
 
-            <div style="height:400px;">
+            <div style="height:280px;">
 
                 <canvas id="appointmentChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Revenue Chart -->
+
+    <div class="card shadow-sm border-0 mt-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+
+                Monthly Revenue
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div style="height:280px;">
+
+                <canvas id="revenueChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Today's Schedule -->
+
+    <div class="card shadow-sm border-0 mt-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+
+                Today's Schedule
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Time</th>
+
+                            <th>Patient</th>
+
+                            <th>Doctor</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for appointment in today_schedule %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ appointment.appointment_time }}
+
+                            </td>
+
+                            <td>
+
+                                {{ appointment.patient.user.username }}
+
+                            </td>
+
+                            <td>
+
+                                Dr. {{ appointment.doctor.user.username }}
+
+                            </td>
+
+                            <td>
+
+                                {% if appointment.status == "scheduled" %}
+
+                                    <span class="badge bg-warning">
+
+                                        Scheduled
+
+                                    </span>
+
+                                {% elif appointment.status == "completed" %}
+
+                                    <span class="badge bg-success">
+
+                                        Completed
+
+                                    </span>
+
+                                {% elif appointment.status == "cancelled" %}
+
+                                    <span class="badge bg-danger">
+
+                                        Cancelled
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+
+                                        {{ appointment.status }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="4" class="text-center text-muted">
+
+                                No appointments for today.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
 
             </div>
 
@@ -290,13 +433,19 @@ Admin Dashboard
 
     <div class="card shadow-sm border-0 mt-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0">
 
                 Recent Appointments
 
             </h5>
+
+            <a href="/api/appointments/ui/" class="btn btn-sm btn-outline-primary">
+
+                View All
+
+            </a>
 
         </div>
 
@@ -338,7 +487,7 @@ Admin Dashboard
 
                             <td>
 
-                                {{ appointment.doctor.user.username }}
+                                Dr. {{ appointment.doctor.user.username }}
 
                             </td>
 
@@ -400,7 +549,7 @@ Admin Dashboard
 
                             <td colspan="5" class="text-center text-muted">
 
-                                No appointments available.
+                                No appointments found.
 
                             </td>
 
@@ -418,7 +567,140 @@ Admin Dashboard
 
     </div>
 
-</div>
+    <!-- Latest Doctors & Latest Patients -->
+
+    <div class="row mt-4">
+
+        <!-- Latest Doctors -->
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        Latest Doctors
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body" style="max-height:280px; overflow-y:auto;">
+
+                    {% for doctor in recent_doctors %}
+
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+
+                        <div>
+
+                            <strong>
+
+                                Dr. {{ doctor.user.username }}
+
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                {{ doctor.department.name }}
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-primary">
+
+                            {{ doctor.experience }} Years
+
+                        </span>
+
+                    </div>
+
+                    {% empty %}
+
+                    <p class="text-muted">
+
+                        No doctors found.
+
+                    </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Latest Patients -->
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        Latest Patients
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body" style="max-height:280px; overflow-y:auto;">
+
+                    {% for patient in recent_patients %}
+
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+
+                        <div>
+
+                            <strong>
+
+                                {{ patient.user.username }}
+
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                {{ patient.blood_group }}
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-success">
+
+                            {{ patient.phone_number }}
+
+                        </span>
+
+                    </div>
+
+                    {% empty %}
+
+                    <p class="text-muted">
+
+                        No patients found.
+
+                    </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    </div>
 
 {% endblock %}
 
@@ -429,6 +711,10 @@ Admin Dashboard
 const months = {{ months|safe }};
 
 const appointmentData = {{ appointment_data|safe }};
+
+const revenueMonths = {{ revenue_months|safe }};
+
+const revenueData = {{ revenue_data|safe }};
 
 </script>
 

@@ -1,4 +1,5 @@
 from django.db import models
+
 from appointments.models import Appointment
 
 
@@ -7,7 +8,7 @@ class Prescription(models.Model):
     appointment = models.OneToOneField(
         Appointment,
         on_delete=models.CASCADE,
-        related_name='prescription'
+        related_name="prescription",
     )
 
     symptoms = models.TextField()
@@ -18,17 +19,33 @@ class Prescription(models.Model):
 
     doctor_notes = models.TextField(
         blank=True,
-        null=True
+        null=True,
     )
 
     follow_up_date = models.DateField(
         blank=True,
-        null=True
+        null=True,
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
 
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+
+        ordering = ["-created_at"]
+
+        verbose_name = "Prescription"
+
+        verbose_name_plural = "Prescriptions"
+
     def __str__(self):
-        return f"Prescription #{self.id}"
+
+        return (
+            f"Prescription - "
+            f"{self.appointment.patient.user.username}"
+        )
