@@ -180,16 +180,15 @@ def login_page(request):
 
             if user.role == "admin":
 
-                return redirect("/")
+              return redirect("admin-dashboard")
 
             elif user.role == "doctor":
 
-                return redirect("/api/doctors/dashboard/")
+             return redirect("doctor-dashboard")
 
             elif user.role == "patient":
 
-                return redirect("/api/patients/dashboard/")
-
+             return redirect("patient-dashboard")
         return render(
 
             request,
