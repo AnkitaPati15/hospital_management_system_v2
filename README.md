@@ -27,3 +27,14 @@ A Hospital Management System backend built with Django.
 3. Install dependencies
 4. Run migrations
 5. Start the development server
+
+## Running the Project
+
+After installing dependencies, run the following commands:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+The application will be available at http://127.0.0.1:8000/.
