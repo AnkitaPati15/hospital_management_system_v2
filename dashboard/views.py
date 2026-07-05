@@ -12,11 +12,21 @@ from prescriptions.models import Prescription
 from billing.models import Bill
 
 import json
+from django.shortcuts import redirect
 
 
 class AdminDashboardView(TemplateView):
 
     template_name = "dashboard/admin_dashboard.html"
+    def dispatch(self, request, *args, **kwargs):
+
+        if not request.user.is_authenticated:
+          return redirect("login-page")
+
+        if request.user.role != "admin":
+          return redirect("login-page")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
 
@@ -175,3 +185,82 @@ class AdminDashboardView(TemplateView):
         )
 
         return context
+class DoctorDashboardView(TemplateView):
+
+    template_name = "dashboard/doctor_dashboard.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect("login-page")
+
+        if request.user.role != "doctor":
+            return redirect("login-page")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        doctor = Doctor.objects.get(user=self.request.user)
+
+        context["appointment_count"] = Appointment.objects.filter(
+            doctor=doctor
+        ).count()
+
+        context["pending_count"] = Appointment.objects.filter(
+            doctor=doctor,
+            status="pending"
+        ).count()
+
+        context["completed_count"] = Appointment.objects.filter(
+            doctor=doctor,
+            status="completed"
+        ).count()
+
+        context["today_appointments"] = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date=timezone.now().date()
+        ).count()
+
+        return context       
+class PatientDashboardView(TemplateView):
+
+    template_name = "dashboard/patient_dashboard.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect("login-page")
+
+        if request.user.role != "patient":
+            return redirect("login-page")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        patient = Patient.objects.get(user=self.request.user)
+
+        context["appointment_count"] = Appointment.objects.filter(
+            patient=patient
+        ).count()
+
+        context["pending_count"] = Appointment.objects.filter(
+            patient=patient,
+            status="pending"
+        ).count()
+
+        context["completed_count"] = Appointment.objects.filter(
+            patient=patient,
+            status="completed"
+        ).count()
+
+        context["bill_count"] = Bill.objects.filter(
+            patient=patient
+        ).count()
+
+        return context         

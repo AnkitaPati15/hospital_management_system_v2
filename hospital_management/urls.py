@@ -95,7 +95,10 @@ urlpatterns = [
         'api/bills/',
         include('billing.urls')
     ),
-    path('', include('dashboard.urls')),
+    path(
+    "dashboard/",
+    include("dashboard.urls"),
+),
 ]
 if settings.DEBUG:
     urlpatterns += static(
