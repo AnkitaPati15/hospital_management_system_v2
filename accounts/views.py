@@ -177,18 +177,20 @@ def login_page(request):
         if user is not None:
 
             login(request, user)
-
             if user.role == "admin":
 
-              return redirect("admin-dashboard")
+             return redirect("admin-dashboard")
 
             elif user.role == "doctor":
 
-             return redirect("doctor-dashboard")
+                return redirect("doctor-dashboard")
 
             elif user.role == "patient":
 
-             return redirect("patient-dashboard")
+                return redirect("patient-dashboard")
+
+            return redirect("login-page")
+
         return render(
 
             request,

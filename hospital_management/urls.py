@@ -1,26 +1,16 @@
 """
 URL configuration for hospital_management project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 from rest_framework import permissions
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,7 +18,7 @@ from django.conf.urls.static import static
 schema_view = get_schema_view(
     openapi.Info(
         title="Hospital Management API",
-        default_version='v1',
+        default_version="v1",
         description="API documentation for Hospital Management System",
         contact=openapi.Contact(
             email="admin@citycarehospital.com"
@@ -41,67 +31,125 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
+    # ==================================
+    # HOME PAGE
+    # ==================================
+
     path(
-        'swagger/',
-        schema_view.with_ui(
-            'swagger',
-            cache_timeout=0
+        "",
+        RedirectView.as_view(
+            pattern_name="login-page",
+            permanent=False,
         ),
-        name='schema-swagger-ui'
     ),
 
+    # ==================================
+    # SWAGGER
+    # ==================================
+
     path(
-        'redoc/',
+        "swagger/",
         schema_view.with_ui(
-            'redoc',
-            cache_timeout=0
+            "swagger",
+            cache_timeout=0,
         ),
-        name='schema-redoc'
-    ),
-
-    path('admin/', admin.site.urls),
-
-    path(
-        'api/auth/',
-        include('accounts.urls')
+        name="schema-swagger-ui",
     ),
 
     path(
-        'api/departments/',
-        include('departments.urls')
+        "redoc/",
+        schema_view.with_ui(
+            "redoc",
+            cache_timeout=0,
+        ),
+        name="schema-redoc",
     ),
 
-    path(
-        'api/doctors/',
-        include('doctors.urls')
-    ),
+    # ==================================
+    # DJANGO ADMIN
+    # ==================================
 
     path(
-        'api/patients/',
-        include('patients.urls')
+        "admin/",
+        admin.site.urls,
     ),
 
-    path(
-        'api/appointments/',
-        include('appointments.urls')
-    ),
+    # ==================================
+    # ACCOUNTS
+    # ==================================
 
     path(
-        'api/prescriptions/',
-        include('prescriptions.urls')
+        "api/auth/",
+        include("accounts.urls"),
     ),
 
+    # ==================================
+    # DEPARTMENTS
+    # ==================================
+
     path(
-        'api/bills/',
-        include('billing.urls')
+        "api/departments/",
+        include("departments.urls"),
     ),
+
+    # ==================================
+    # DOCTORS
+    # ==================================
+
     path(
-    "dashboard/",
-    include("dashboard.urls"),
-),
+        "api/doctors/",
+        include("doctors.urls"),
+    ),
+
+    # ==================================
+    # PATIENTS
+    # ==================================
+
+    path(
+        "api/patients/",
+        include("patients.urls"),
+    ),
+
+    # ==================================
+    # APPOINTMENTS
+    # ==================================
+
+    path(
+        "api/appointments/",
+        include("appointments.urls"),
+    ),
+
+    # ==================================
+    # PRESCRIPTIONS
+    # ==================================
+
+    path(
+        "api/prescriptions/",
+        include("prescriptions.urls"),
+    ),
+
+    # ==================================
+    # BILLING
+    # ==================================
+
+    path(
+        "api/bills/",
+        include("billing.urls"),
+    ),
+
+    # ==================================
+    # DASHBOARD
+    # ==================================
+
+    path(
+        "dashboard/",
+        include("dashboard.urls"),
+    ),
 ]
+
+
 if settings.DEBUG:
     urlpatterns += static(
         settings.STATIC_URL,
-        document_root=settings.STATIC_ROOT
+        document_root=settings.STATIC_ROOT,
     )

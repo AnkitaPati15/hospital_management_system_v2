@@ -46,333 +46,324 @@
     <!-- Navigation -->
 
     <ul class="nav flex-column mt-4">
+<!-- ================= ADMIN ================= -->
 
-        <li class="nav-item">
+{% if request.user.is_authenticated and request.user.role == "admin" %}
 
-            <a href="/"
-               class="nav-link">
+<li class="nav-item">
 
-                <i class="bi bi-speedometer2"></i>
+    <a href="{% url 'admin-dashboard' %}"
+       class="nav-link">
 
-                Dashboard
+        <i class="bi bi-speedometer2"></i>
 
-            </a>
+        Dashboard
 
-        </li>
+    </a>
 
+</li>
 
+<li class="menu-title">
 
-        <!-- ================= ADMIN ================= -->
+    Management
 
-        {% if request.user.is_authenticated and request.user.role == 'admin' %}
+</li>
 
-        <li class="menu-title">
+<li class="nav-item">
 
-            Management
+    <a href="{% url 'department-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-building"></i>
 
-        <li class="nav-item">
+        Departments
 
-            <a href="/api/departments/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-building"></i>
+</li>
 
-                Departments
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'doctor-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-person-badge"></i>
 
-        <li class="nav-item">
+        Doctors
 
-            <a href="/api/doctors/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-person-badge"></i>
+</li>
 
-                Doctors
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'patient-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-people"></i>
 
-        <li class="nav-item">
+        Patients
 
-            <a href="/api/patients/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-people"></i>
+</li>
 
-                Patients
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'appointment-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-calendar-check"></i>
 
-        <li class="nav-item">
+        Appointments
 
-            <a href="/api/appointments/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-calendar-check"></i>
+</li>
 
-                Appointments
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'prescription-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-file-earmark-medical"></i>
 
-        <li class="nav-item">
+        Prescriptions
 
-            <a href="/api/prescriptions/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-file-earmark-medical"></i>
+</li>
 
-                Prescriptions
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'bill-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-receipt"></i>
 
-        <li class="nav-item">
+        Billing
 
-            <a href="/api/bills/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-receipt"></i>
+</li>
 
-                Billing
+{% endif %}
+<!-- ================= PATIENT ================= -->
 
-            </a>
+{% if request.user.is_authenticated and request.user.role == "patient" %}
 
-        </li>
+<li class="menu-title">
 
-        {% endif %}
+    Patient Portal
 
+</li>
 
+<li class="nav-item">
 
-        <!-- ================= PATIENT ================= -->
+    <a href="{% url 'patient-dashboard' %}"
+       class="nav-link">
 
-        {% if request.user.is_authenticated and request.user.role == 'patient' %}
+        <i class="bi bi-speedometer2"></i>
 
-        <li class="menu-title">
+        Dashboard
 
-            Patient Portal
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+<li class="nav-item">
 
-            <a href="/api/patients/dashboard/"
-               class="nav-link">
+    <a href="{% url 'doctor-list' %}"
+       class="nav-link">
 
-                <i class="bi bi-grid"></i>
+        <i class="bi bi-person-badge"></i>
 
-                Dashboard
+        Doctors
 
-            </a>
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+<li class="nav-item">
 
-            <a href="/api/doctors/ui/"
-               class="nav-link">
+    <a href="{% url 'appointment-book' %}"
+       class="nav-link">
 
-                <i class="bi bi-person-badge"></i>
+        <i class="bi bi-calendar-plus"></i>
 
-                Doctors
+        Book Appointment
 
-            </a>
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+<li class="nav-item">
 
-            <a href="/api/appointments/book/"
-               class="nav-link">
+    <a href="{% url 'appointment-list' %}"
+       class="nav-link">
 
-                <i class="bi bi-calendar-plus"></i>
+        <i class="bi bi-calendar-week"></i>
 
-                Book Appointment
+        My Appointments
 
-            </a>
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+<li class="nav-item">
 
-            <a href="/api/patients/my-appointments/"
-               class="nav-link">
+    <a href="{% url 'prescription-list' %}"
+       class="nav-link">
 
-                <i class="bi bi-calendar-week"></i>
+        <i class="bi bi-capsule"></i>
 
-                My Appointments
+        My Prescriptions
 
-            </a>
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+<li class="nav-item">
 
-            <a href="/api/patients/my-prescriptions/"
-               class="nav-link">
+    <a href="{% url 'bill-list' %}"
+       class="nav-link">
 
-                <i class="bi bi-capsule"></i>
+        <i class="bi bi-credit-card"></i>
 
-                My Prescriptions
+        My Bills
 
-            </a>
+    </a>
 
-        </li>
+</li>
 
-        <li class="nav-item">
+{% endif %}
+<!-- ================= DOCTOR ================= -->
 
-            <a href="/api/patients/my-bills/"
-               class="nav-link">
+{% if request.user.is_authenticated and request.user.role == "doctor" %}
 
-                <i class="bi bi-credit-card"></i>
+<li class="menu-title">
 
-                My Bills
+    Doctor Panel
 
-            </a>
+</li>
 
-        </li>
+<li class="nav-item">
 
-        {% endif %}
+    <a href="{% url 'doctor-dashboard' %}"
+       class="nav-link">
 
+        <i class="bi bi-speedometer2"></i>
 
+        Dashboard
 
-        <!-- ================= DOCTOR ================= -->
+    </a>
 
-        {% if request.user.is_authenticated and request.user.role == 'doctor' %}
+</li>
 
-        <li class="menu-title">
+<li class="nav-item">
 
-            Doctor Panel
+    <a href="{% url 'appointment-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-calendar-check"></i>
 
-        <li class="nav-item">
+        My Appointments
 
-            <a href="/api/doctors/dashboard/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-grid"></i>
+</li>
 
-                Dashboard
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'prescription-list' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-file-earmark-medical"></i>
 
-        <li class="nav-item">
+        My Prescriptions
 
-            <a href="/api/appointments/ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-calendar-check"></i>
+</li>
 
-                My Appointments
+{% endif %}
 
-            </a>
 
-        </li>
 
-        <li class="nav-item">
+<!-- ================= GUEST ================= -->
 
-            <a href="/api/prescriptions/ui/"
-               class="nav-link">
+{% if not request.user.is_authenticated %}
 
-                <i class="bi bi-file-earmark-medical"></i>
+<li class="menu-title">
 
-                Prescriptions
+    Account
 
-            </a>
+</li>
 
-        </li>
+<li class="nav-item">
 
-        {% endif %}
+    <a href="{% url 'login-page' %}"
+       class="nav-link">
 
+        <i class="bi bi-box-arrow-in-right"></i>
 
+        Login
 
-        <!-- ================= GUEST ================= -->
+    </a>
 
-        {% if not request.user.is_authenticated %}
+</li>
 
-        <li class="menu-title">
+<li class="nav-item">
 
-            Account
+    <a href="{% url 'register-choice' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-person-plus"></i>
 
-        <li class="nav-item">
+        Register
 
-            <a href="/api/auth/login-ui/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-box-arrow-in-right"></i>
+</li>
 
-                Login
+{% endif %}
 
-            </a>
 
-        </li>
 
-        <li class="nav-item">
+<!-- ================= PROFILE ================= -->
 
-            <a href="/api/auth/register-choice/"
-               class="nav-link">
+{% if request.user.is_authenticated %}
 
-                <i class="bi bi-person-plus"></i>
+<hr class="text-secondary">
 
-                Register
+<li class="nav-item">
 
-            </a>
+    <a href="{% url 'profile' %}"
+       class="nav-link">
 
-        </li>
+        <i class="bi bi-person-circle"></i>
 
-        {% endif %}
+        My Profile
 
+    </a>
 
+</li>
 
-        <!-- ================= PROFILE ================= -->
+<li class="nav-item">
 
-        {% if request.user.is_authenticated %}
+    <a href="{% url 'logout-page' %}"
+       class="nav-link text-danger">
 
-        <hr class="text-secondary">
+        <i class="bi bi-box-arrow-right"></i>
 
-        <li class="nav-item">
+        Logout
 
-            <a href="/api/auth/profile/"
-               class="nav-link">
+    </a>
 
-                <i class="bi bi-person-circle"></i>
+</li>
 
-                My Profile
+{% endif %}
 
-            </a>
+</ul>
 
-        </li>
-
-        <li class="nav-item">
-
-            <a href="/api/auth/logout-ui/"
-               class="nav-link text-danger">
-
-                <i class="bi bi-box-arrow-right"></i>
-
-                Logout
-
-            </a>
-
-        </li>
-
-        {% endif %}
-
-    </ul>
-
-</div>
+</div>        
